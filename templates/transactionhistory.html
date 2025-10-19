@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% block title %}
+Transaction History
+{% endblock title %}
+
+{% block css %}
+<style>
+    .table-responsive {
+        max-height: 400px;
+        overflow-y: auto;
+    }
+
+    .table-responsive tbody tr {
+        height: auto;
+        /* ensures default row height */
+    }
+</style>
+{% endblock css %}
+
+{% block body %}
+<!-- TRANSACTION TABLE -->
+<div class="container mt-5">
+    <h2 class="d-block text-center">Transaction History</h2>
+    {% if transactions|length != 0 %}
+    <div class="table-responsive" style="max-height: 72vh; overflow-y: auto;">
+        <table class="table table-striped">
+            <thead class="thead-dark" style="position: sticky; top: 0; z-index: 1;">
+                <tr>
+                    <th scope="col">S.No.</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Quantity</th>
+                    <th scope="col">Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for transaction in transactions %}
+                <tr>
+                    <th scope="row">{{ loop.index }}</th>
+                    <td>
+                        <div class="name-container">
+                            <img src="{{ url_for('static', filename='images/products/'+transaction.product.image) }}"
+                                alt="" style="width:40px; height:40px; object-fit:cover; margin-right:5px;">
+                            {{ transaction.product.name }}
+                        </div>
+                    </td>
+                    <td>{{ transaction.amount }}</td>
+                    <td class="text-danger font-weight-bold">-${{ transaction.total }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <h4 class="d-block text-center text-danger">No Transactions to Show.</h4>
+    {% endif %}
+</div>
+{% endblock body %}

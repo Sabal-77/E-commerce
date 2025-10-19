@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% block title %}
+Sign Up
+{% endblock title %}
+{% block css %}
+    <style>
+        form{
+            border:2px solid whitesmoke;
+            border-radius: 7px;
+            box-shadow: 0 0 20px rgb(195, 193, 193);
+            padding: 10px;
+        }
+
+        .form-footer{
+            display: flex;
+            justify-content: space-between;
+        }
+    </style>
+{% endblock css %}
+{% block body %}
+<form action="/login" method="POST" class="container mt-5">
+    {{ form.hidden_tag() }}
+    <div class="mb-3 container">
+        {{ form.username.label(class="form-label", for="exampleInputUsername1") }}
+        {% if form.username.errors %}
+            {{ form.username(class="form-control is-invalid", id="exampleInputUsername1") }}
+            <div class="invalid-feedback">
+                {% for error in form.username.errors %}
+                <span>{{ error }}</span>
+                {% endfor %}
+            </div>
+        {% else %}
+            {{ form.username(class="form-control", id="exampleInputUsername1") }}
+        {% endif %}
+    </div>
+
+    <div class="mb-3 container">
+        {{ form.pw.label(class="form-label", for="exampleInputPassword1") }}
+        {% if form.pw.errors %}
+            {{ form.pw(class="form-control is-invalid", id="exampleInputPassword1") }}
+            <div class="invalid-feedback">
+                {% for error in form.pw.errors %}
+                <span>{{ error }}</span>
+                {% endfor %}
+            </div>
+        {% else %}
+            {{ form.pw(class="form-control", id="exampleInputPassword1") }}
+        {% endif %}
+    </div>
+
+    <div class="container form-footer">
+        <h5>Don't have an account? <a href="/register">Sign Up</a></h5>
+        {{ form.login(class="btn btn-outline-primary") }}
+    </div>
+</form>
+{% endblock body %}

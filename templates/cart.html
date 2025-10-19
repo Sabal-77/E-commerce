@@ -1,0 +1,188 @@
+{% extends 'base.html' %}
+{% block title %}
+My Cart
+{% endblock title %}
+
+{% block css %}
+<style>
+    .table-responsive {
+        max-height: 400px;
+        overflow-y: auto;
+    }
+
+    .table-responsive tbody tr {
+        height: auto;
+        /* ensures default row height */
+    }
+
+    .name-container img {
+        vertical-align: middle;
+    }
+
+    .btn-container {
+        display: flex;
+        padding-right: 5px;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .name-container {
+        display: flex;
+        padding-right: 5px;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .name-container img {
+        width: 50px;
+        height: 50px;
+    }
+
+    .checkout-container {
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .total {
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 5px;
+        height: auto;
+        width: auto;
+        cursor: default !important;
+    }
+</style>
+{% endblock css %}
+
+{% block body %}
+<div class="container mt-5">
+    <h2 class="d-block text-center mb-3">Cart</h2>
+    {% if carts|length != 0 %}
+    <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+        <table class="table table-striped">
+            <thead class="thead-dark" style="position: sticky; top: 0; z-index: 1;">
+                <tr>
+                    <th scope="col">S.No.</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Stocks</th>
+                    <th scope="col">Quantity</th>
+                    <th scope="col">Price</th>
+                    <th scope="col">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for cart in carts %}
+                <tr>
+                    <th scope="row">{{ loop.index }}</th>
+                    <td>
+                        <div class="name-container">
+                            <img src="{{ url_for('static', filename='images/products/'+cart.product.image) }}" alt="" style="width:40px; height:40px; object-fit:cover; margin-right:5px;">
+                            {{ cart.product.name }}
+                        </div>
+                    </td>
+
+                    {% if cart.product.stock == 0 %}
+                    <td class="text-danger">Out of Stock</td>
+                    {% else %}
+                    <td>{{ cart.product.stock }}</td>
+                    {% endif %}
+
+                    <td>{{ cart.amount }}</td>
+                    <td>${{ cart.amount * cart.product.price }}</td>
+                    <td>
+                        <div class="btn-container">
+                            {% if cart.product.stock == 0 %}
+                            <button type="button" class="btn btn-outline-primary disabled">Update</button>
+                            {% else %}
+                            <button type="button" class="btn btn-outline-primary" data-toggle="modal" data-target="#modal{{ cart.product.id }}">Update</button>
+                            {% endif %}
+                            <a href="/product/cart/remove/{{ cart.id }}" class="btn btn-outline-danger">Remove</a>
+                        </div>
+                    </td>
+                </tr>
+
+                <!-- Modal -->
+                <div class="modal fade" id="modal{{ cart.product.id }}" tabindex="-1" role="dialog"
+                    aria-labelledby="modalTitle{{ cart.product.id }}" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">{{ cart.product.name }}</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <form action="{{ url_for('add_to_cart', product_id=cart.product.id, redirect='false') }}" method="POST">
+                                    <h6>Stocks Available: {{ cart.product.stock }}</h6>
+                                    <div class="mb-3">
+                                        <label for="quantity{{ cart.product.id }}" class="form-label">
+                                            <h6>Quantity</h6>
+                                        </label>
+                                        <input type="number" name="quantity" id="quantity{{ cart.product.id }}" class="form-control" min="1" max="{{ cart.product.stock }}" value="{{ cart.amount }}" required>
+                                    </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                <button type="submit" class="btn btn-primary">Update</button>
+                            </div>
+                                </form>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="checkout-container mt-3 d-flex justify-content-between">
+        <div class="total btn btn-dark">
+            <span>Total: </span>
+            <span>${{ total }}</span>
+        </div>
+        <a href="/checkout" class="btn btn-success">Checkout</a>
+    </div>
+    {% else %}
+    <h4 class="d-block text-center text-danger">No Items to Show</h4>
+    {% endif %}
+</div>
+<hr>
+<!-- TRANSACTION TABLE -->
+<div class="container mt-5">
+    <h2 class="d-block text-center">Transaction History</h2>
+    {% if transactions|length != 0 %}
+    <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+        <table class="table table-striped">
+            <thead class="thead-dark" style="position: sticky; top: 0; z-index: 1;">
+                <tr>
+                    <th scope="col">S.No.</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Quantity</th>
+                    <th scope="col">Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for transaction in transactions %}
+                <tr>
+                    <th scope="row">{{ loop.index }}</th>
+                    <td>
+                        <div class="name-container">
+                            <img src="{{ url_for('static', filename='images/products/'+transaction.product.image) }}"
+                                alt="" style="width:40px; height:40px; object-fit:cover; margin-right:5px;">
+                            {{ transaction.product.name }}
+                        </div>
+                    </td>
+                    <td>{{ transaction.amount }}</td>
+                    <td class="text-danger font-weight-bold">-${{ transaction.total }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <h4 class="d-block text-center text-danger">No Transactions to Show.</h4>
+    {% endif %}
+</div>
+{% endblock body %}

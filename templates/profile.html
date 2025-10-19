@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+{% block title %}
+Products Dashboard
+{% endblock title %}
+Manage Products
+{% block body %}
+
+{% block css %}
+<style>
+    form {
+        border-radius: 7px;
+        box-shadow: 0 0 20px rgb(195, 193, 193);
+        padding: 10px;
+    }
+
+    .btn-center {
+        display: flex;
+        justify-content: space-between;
+    }
+</style>
+{% endblock css %}
+<!-- Add new products -->
+<form action="" class="container mt-5 border" method="POST" enctype="multipart/form-data">
+    <h2 class="d-block text-center">Your Profile</h2>
+    {{ form.hidden_tag() }}
+    <div class="mb-3 container">
+        {{ form.username.label(class="form-label", for="exampleInputUsername1") }}
+        {% if form.username.errors %}
+        {{ form.username(class="form-control is-invalid", id="exampleInputUsername1", disabled=True) }}
+        <div class="invalid-feedback">
+            {% for error in form.username.errors %}
+            <span>{{ error }}</span>
+            {% endfor %}
+        </div>
+        {% else %}
+        {{ form.username(class="form-control", id="exampleInputUsername1", disabled=True) }}
+        {% endif %}
+    </div>
+
+    <div class="mb-3 container">
+        {{ form.email.label(class="form-label", for="exampleInputUsername1") }}
+        {% if form.email.errors %}
+        {{ form.email(class="form-control is-invalid", id="exampleInputUsername1", disabled=True) }}
+        <div class="invalid-feedback">
+            {% for error in form.email.errors %}
+            <span>{{ error }}</span>
+            {% endfor %}
+        </div>
+        {% else %}
+        {{ form.email(class="form-control", id="exampleInputUsername1", disabled=True) }}
+        {% endif %}
+    </div>
+
+    <div class="mb-3 container">
+        <label class="form-label" for="balance">Balance</label>
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+                <span class="input-group-text">$</span>
+            </div>
+            <input type="number" class="form-control" id="balance" value="{{ current_user.balance }}" disabled>
+        </div>
+    </div>
+    
+    <div class="btn-center container">
+        <a href="/profile/edit" class="btn btn-primary">Edit Profile</a>
+        <!-- Button trigger modal -->
+        <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#exampleModalCenter">
+            Reset Password
+        </button>
+    </div>
+    </form>
+
+        <!-- Modal -->
+        <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog"
+            aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLongTitle">Change Password</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <form action="/reset/password" method="POST">
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label for="opw" class="form-label">
+                                    <h6>Old Password</h6>
+                                </label>
+                                <input type="text" name="opw" id="opw" class="form-control" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="npw" class="form-label">
+                                    <h6>New Password</h6>
+                                </label>
+                                <input type="text" name="npw" id="npw" class="form-control" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="confirm-npw" class="form-label">
+                                    <h6>Confirm New Password</h6>
+                                </label>
+                                <input type="text" name="cnpw" id="confirm-npw" class="form-control" required>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary">Save changes</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+{% endblock body %}

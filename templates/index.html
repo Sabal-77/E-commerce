@@ -1,0 +1,168 @@
+{% extends 'base.html' %}
+{% block title %}
+Home
+{% endblock title %}
+
+{% block css %}
+<style>
+    .container {
+        width: 90%;
+        height: auto;
+        padding: 10px;
+        display: flex;
+        justify-content: space-evenly;
+        flex-wrap: wrap;
+        gap: 20px;
+    }
+
+    img {
+        width: 100px;
+        height: 200px;
+    }
+
+    .btn-container {
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+    }
+</style>
+{% endblock css %}
+
+{% block navbar %}
+<form action="/search/product" method="POST">
+    <div class="col">
+        <div class="input-group">
+            <input class="form-control" type="search" placeholder="Search" aria-label="Search" name="search">
+            <div class="input-group-append">
+                <button class="btn btn-primary" type="submit">Search</button>
+            </div>
+        </div>
+    </div>
+</form>
+{% endblock navbar %}
+
+{% block body %}
+<div class="container mt-5">
+    {% for product in products %}
+    <div class="card mx-auto" style="width: 18rem;">
+        <img src="{{ url_for('static', filename='images/products/'+product.image)}}" class="card-img-top border-bottom"
+            alt="{{ product.name }}">
+        <div class="card-body">
+            <h5 class="card-title">{{ product.name }}</h5>
+            <h6 class="card-text">Product ID: {{ product.id }}</h6>
+            <h6 class="card-text">Category: {{ product.category.capitalize() }}</h6>
+            <h6 class="card-text">Price: {{ product.price }}$</h6>
+            {% if product.stock==0 %}
+            <h6 class="card-text text-danger">Out of Stock</h6>
+            {% else %}
+            <h6 class="card-text">Stock: {{ product.stock }}</h6>
+            {% endif %}
+            <p class="card-text">{{ product.desc[:100] }}...</p>
+
+            {% if product.stock==0 %}
+            <div class="btn-container">
+                <button type="button" class="btn btn-outline-success disabled">Buy</button>
+                <button type="button" class="btn btn-primary disabled">
+                    Add to Cart
+                </button>
+            </div>
+            {% else %}
+            <div class="btn-container">
+                <!-- Buy button trigger modal -->
+                <button type="button" class="btn btn-outline-success" data-toggle="modal"
+                    data-target="#buymodal{{ product.id }}">
+                    Buy
+                </button>
+
+                <!-- Add to Cart button trigger modal -->
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal{{ product.id }}">
+                    Add to Cart
+                </button>
+
+                <!-- Buy modal -->
+                <div class="modal fade" id="buymodal{{ product.id }}" tabindex="-1" role="dialog"
+                    aria-labelledby="buymodalTitle{{ product.id }}" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">{{ product.name }}</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <form action="/product/buy/{{ product.id }}" method="POST">
+                                <div class="modal-body">
+                                    <h6>Stocks Available: {{ product.stock }}</h6>
+                                    <div class="mb-3">
+                                        <label for="buyquantity{{ product.id }}" class="form-label">
+                                            <h6>Quantity</h6>
+                                        </label>
+                                        {% if current_user.is_authenticated %}
+                                        <input type="number" name="quantity" id="buyquantity{{ product.id }}"
+                                            class="form-control" min="1" max="{{ product.stock }}" value="1" required>
+                                        {% else %}
+                                        <input type="number" name="quantity" id="buyquantity{{ product.id }}"
+                                            class="form-control" min="1" max="{{ product.stock }}" value="1" disabled>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                    {% if current_user.is_authenticated %}
+                                    <button type="submit" class="btn btn-success">Buy Now</button>
+                                    {% else %}
+                                    <a href="/register" class="btn btn-success">Sign Up</a>
+                                    {% endif %}
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Add to Cart modal -->
+                <div class="modal fade" id="modal{{ product.id }}" tabindex="-1" role="dialog"
+                    aria-labelledby="modalTitle{{ product.id }}" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalCenterTitle">{{ product.name }}</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <form action="/product/cart/{{ product.id }}" method="POST">
+                                <div class="modal-body">
+                                    <h6>Stocks Available: {{ product.stock }}</h6>
+                                    <div class="mb-3">
+                                        <label for="quantity{{ product.id }}" class="form-label">
+                                            <h6>Quantity</h6>
+                                        </label>
+                                        {% if current_user.is_authenticated %}
+                                        <input type="number" name="quantity" id="quantity{{ product.id }}"
+                                            class="form-control" min="1" max="{{ product.stock }}" value="1" required>
+                                        {% else %}
+                                        <input type="number" name="quantity" id="quantity{{ product.id }}"
+                                            class="form-control" min="1" max="{{ product.stock }}" value="1" disabled>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                    {% if current_user.is_authenticated %}
+                                    <button type="submit" class="btn btn-primary">Cart</button>
+                                    {% else %}
+                                    <a href="/register" class="btn btn-primary">Sign Up</a>
+                                    {% endif %}
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+{% endblock body %}

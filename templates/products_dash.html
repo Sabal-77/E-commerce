@@ -1,0 +1,175 @@
+{% extends 'base.html' %}
+{% block title %}
+Products Dashboard
+{% endblock title %}
+Manage Products
+{% block body %}
+
+{% block css %}
+<style>
+    form {
+        border: 2px solid whitesmoke;
+        border-radius: 7px;
+        box-shadow: 0 0 20px rgb(195, 193, 193);
+        padding: 10px;
+    }
+
+    .btn-center {
+        display: flex;
+        justify-content: center;
+    }
+
+    .carousel-container {
+        border: 2px solid whitesmoke;
+        border-radius: 7px;
+        box-shadow: 0 0 20px rgb(195, 193, 193);
+        padding: 10px;
+    }
+
+    .btn-container {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .carousel-control-prev,
+    .carousel-control-next {
+        width: 50px;
+        /* smaller button width */
+        height: 50px;
+        top: 50%;
+        transform: translateY(-50%);
+        background-color: rgba(0, 0, 0, 0.5);
+        border-radius: 50%;
+    }
+
+    img{
+        width:100px;
+        height:200px;
+    }
+</style>
+{% endblock css %}
+<!-- Add new products -->
+<form action="" class="container mt-5" method="POST" enctype="multipart/form-data">
+    <h2 class="d-block text-center">Add New Products</h2>
+    {{ form.hidden_tag() }}
+    <div class="mb-3 container">
+        {{ form.name.label(class="form-label", for="exampleInputUsername1") }}
+        {% if form.name.errors %}
+        {{ form.name(class="form-control is-invalid", id="exampleInputUsername1") }}
+        <div class="invalid-feedback">
+            {% for error in form.name.errors %}
+            <span>{{ error }}</span>
+            {% endfor %}
+        </div>
+        {% else %}
+        {{ form.name(class="form-control", id="exampleInputUsername1") }}
+        {% endif %}
+    </div>
+
+    <div class="mb-3 container">
+        {{ form.desc.label(class="form-label", for="exampleInputUsername1") }}
+        {{ form.desc(class="form-control", id="exampleInputUsername1", value="Lorem, ipsum dolor sit amet consectetur
+        adipisicing elit. Doloremque eaque perferendis rem sed quae ullam inventore blanditiis eveniet distinctio
+        aliquid? Autem, soluta dicta est assumenda iste expedita voluptatibus consequatur voluptates?") }}
+    </div>
+
+    <div class="mb-3 container">
+        {{ form.price.label(class="form-label", for="exampleInputUsername1") }}
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+                <span class="input-group-text">$</span>
+            </div>
+            {% if form.price.errors %}
+            {{ form.price(class="form-control is-invalid", id="exampleInputUsername1") }}
+            <div class="invalid-feedback">
+                {% for error in form.price.errors %}
+                <span>{{ error }}</span>
+                {% endfor %}
+            </div>
+            {% else %}
+            {{ form.price(class="form-control", id="exampleInputUsername1") }}
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="mb-3 container">
+        {{ form.stock.label(class="form-label", for="exampleInputUsername1") }}
+        {% if form.stock.errors %}
+        {{ form.stock(class="form-control is-invalid", id="exampleInputUsername1") }}
+        <div class="invalid-feedback">
+            {% for error in form.stock.errors %}
+            <span>{{ error }}</span>
+            {% endfor %}
+        </div>
+        {% else %}
+        {{ form.stock(class="form-control", id="exampleInputUsername1") }}
+        {% endif %}
+    </div>
+
+    <div class="mb-3 container">
+        {{ form.category.label(class="form-label") }}
+        {% if form.category.errors %}
+        {{ form.category(class="form-control is-invalid") }}
+        <div class="invalid-feedback">
+            {% for error in form.category.errors %}
+            <span>{{ error }}</span>
+            {% endfor %}
+        </div>
+        {% else %}
+        {{ form.category(class="form-control") }}
+        {% endif %}
+    </div>
+
+    <div class="mb-3 container">
+        {{ form.img.label(class="form-label", for="inputGroupFile01") }}
+        {% if form.img.errors %}
+            {{ form.img(class="form-control is-invalid", id="inputGroupFile01") }}
+            {% for error in form.img.errors %}
+                <div class="invalid-feedback">
+                    {{ error }}
+                </div>
+            {% endfor %}
+        {% else %}
+            {{ form.img(class="form-control", id="inputGroupFile01") }}
+        {% endif %}
+    </div>
+
+    <div class="btn-center">
+        {{ form.add_product(class='btn btn-outline-primary') }}
+    </div>
+</form>
+
+<div class="container my-5 carousel-container">
+    <h2 class="d-block text-center">Products</h2>
+    <div id="carouselExampleControls" class="carousel slide" data-ride="carousel">
+        <div class="carousel-inner">
+            {% for product in products %}
+            <div class="carousel-item {% if loop.first %}active{% endif %}">
+                <div class="card mx-auto" style="width: 18rem;">
+                    <img src="{{ url_for('static', filename='images/products/'+product.image)}}" class="card-img-top border-bottom"
+                        alt="{{ product.name }}">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ product.name }}</h5>
+                        <h6 class="card-text">Product ID: {{ product.id }}</h6>
+                        <h6 class="card-text">Price: {{ product.price }}$</h6>
+                        <h6 class="card-text">Stock: {{ product.stock }}</h6>
+                        <p class="card-text">{{ product.desc[:100] }}...</p>
+                        <div class="btn-container">
+                            <a href="/admin/products/edit/{{ product.id }}" class="btn btn-outline-primary">Update</a>
+                            <a href="/admin/products/delete/{{ product.id }}" class="btn btn-outline-danger">Delete</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+            <a class="carousel-control-prev btn-dark" href="#carouselExampleControls" role="button" data-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="sr-only">Previous</span>
+            </a>
+            <a class="carousel-control-next btn-dark" href="#carouselExampleControls" role="button" data-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="sr-only">Next</span>
+            </a>
+        </div>
+    </div>
+    {% endblock body %}

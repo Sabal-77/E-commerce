@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% block title %}
+Admin Panel
+{% endblock title %}
+
+{% block body %}
+<form action="/admin" class="container mt-5 mb-3" method="POST">
+    <h2 class="d-block text-center">Search User</h2>
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            {{ form.hidden_tag() }}
+            <div class="input-group">
+                {{ form.search(class="form-control", placeholder="Search") }}
+                <div class="input-group-append">
+                    {{ form.submit(class="btn btn-outline-primary") }}
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+{% if userData %}
+<div class="d-flex justify-content-center">
+    <div class="card" style="width: 18rem;">
+        <div class="card-body">
+            <h5 class="card-title">Username: {{ userData.username }}</h5>
+            <p class="card-text">Email: {{ userData.email }}</p>
+            <p class="card-text">Role: {{ userData.role.capitalize() }}</p>
+
+            <!-- Manage user's roles -->
+            <p class="card-text">Set Roles:</p>
+            <div class="d-flex justify-content-between">
+                <a href="{{ url_for('set_role', role='user', username=userData.username) }}" class="btn btn-success"
+                    style="width: 49%;">User</a>
+                <a href="{{ url_for('set_role', role='admin', username=userData.username) }}" class="btn btn-danger"
+                    style="width: 49%;">Admin</a>
+            </div>
+
+            <!-- Manage user's balance -->
+            <form action="/admin/set/balance/{{ userData.id }}" class="mt-3" method="POST">
+                <p class="card-text">Balance: ${{ userData.balance }}</p>
+                <p class="card-text">Set Balance:</p>
+                <div class="input-group mb-3">
+                    <span class="input-group-text">$</span>
+                    <input type="number" class="form-control" name="balance">
+                </div>
+                <button class="btn btn-success w-100">Update Balance</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- ADMIN CONFIGS -->
+<div class="d-flex justify-content-center mt-3">
+    <div class="card" style="width: 18rem;">
+        <div class="card-body">
+            <h5 class="card-title">Admin Statistics</h5>
+
+            <!-- Balance Features  -->
+            <h6 class="card-text">Total Users: <span class="text-danger font-weight-bold">{{ users|length }}</span></h6>
+            <h6 class="card-text">Total Products: <span class="text-danger font-weight-bold">{{ products|length }}</span></h6>
+        </div>
+    </div>
+</div>
+{% endblock body %}

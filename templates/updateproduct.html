@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+{% block title %}
+Products Dashboard
+{% endblock title %}
+Manage Products
+{% block body %}
+
+{% block css %}
+<style>
+    form {
+        border: 2px solid whitesmoke;
+        border-radius: 7px;
+        box-shadow: 0 0 20px rgb(195, 193, 193);
+        padding: 10px;
+    }
+
+    .btn-center {
+        display: flex;
+        justify-content: center;
+    }
+
+</style>
+{% endblock css %}
+<!-- Update products -->
+<form action="/admin/products/edit/{{ product.id }}" class="container mt-5" method="POST" enctype="multipart/form-data">
+    <h2 class="d-block text-center">Update Your Product</h2>
+    {{ form.hidden_tag() }}
+    <div class="mb-3 container">
+        {{ form.name.label(class="form-label", for="exampleInputUsername1") }}
+        {% if form.name.errors %}
+        {{ form.name(class="form-control is-invalid", id="exampleInputUsername1") }}
+        <div class="invalid-feedback">
+            {% for error in form.name.errors %}
+            <span>{{ error }}</span>
+            {% endfor %}
+        </div>
+        {% else %}
+        {{ form.name(class="form-control", id="exampleInputUsername1") }}
+        {% endif %}
+    </div>
+
+    <div class="mb-3 container">
+        {{ form.desc.label(class="form-label", for="exampleInputUsername1") }}
+        {{ form.desc(class="form-control", id="exampleInputUsername1") }}
+    </div>
+
+    <div class="mb-3 container">
+        {{ form.price.label(class="form-label", for="exampleInputUsername1") }}
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+                <span class="input-group-text">$</span>
+            </div>
+            {% if form.price.errors %}
+            {{ form.price(class="form-control is-invalid", id="exampleInputUsername1") }}
+            <div class="invalid-feedback">
+                {% for error in form.price.errors %}
+                <span>{{ error }}</span>
+                {% endfor %}
+            </div>
+            {% else %}
+            {{ form.price(class="form-control", id="exampleInputUsername1") }}
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="mb-3 container">
+        {{ form.stock.label(class="form-label", for="exampleInputUsername1") }}
+        {% if form.stock.errors %}
+        {{ form.stock(class="form-control is-invalid", id="exampleInputUsername1") }}
+        <div class="invalid-feedback">
+            {% for error in form.stock.errors %}
+            <span>{{ error }}</span>
+            {% endfor %}
+        </div>
+        {% else %}
+        {{ form.stock(class="form-control", id="exampleInputUsername1") }}
+        {% endif %}
+    </div>
+
+    <div class="mb-3 container">
+        {{ form.category.label(class="form-label") }}
+        {% if form.category.errors %}
+        {{ form.category(class="form-control is-invalid") }}
+        <div class="invalid-feedback">
+            {% for error in form.category.errors %}
+            <span>{{ error }}</span>
+            {% endfor %}
+        </div>
+        {% else %}
+        {{ form.category(class="form-control") }}
+        {% endif %}
+    </div>
+
+    <div class="mb-3 container">
+        {{ form.img.label(class="form-label", for="inputGroupFile01") }}
+        {% if form.img.errors %}
+            {{ form.img(class="form-control is-invalid", id="inputGroupFile01") }}
+            {% for error in form.img.errors %}
+                <div class="invalid-feedback">
+                    {{ error }}
+                </div>
+            {% endfor %}
+        {% else %}
+            {{ form.img(class="form-control", id="inputGroupFile01") }}
+        {% endif %}
+    </div>
+    
+    <div class="btn-center">
+        {{ form.update_product(class='btn btn-outline-primary') }}
+    </div>
+</form>
+{% endblock body %}
